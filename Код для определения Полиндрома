@@ -1,9 +1,14 @@
-def reverse(text):
-    return text[::-1]
-def is_palindrome(text):
-    return text == reverse(text)
-something = input('Введите текст: ')
-if (is_palindrome(something)):
-    print("Да, это палиндром")
-else:
-    print("Нет, это не палиндром")
+def is_palindrome(s):
+    # Убираем знаки препинания и приводим строку к нижнему регистру
+    s = ''.join(e for e in s if e.isalnum()).lower()
+    # Проверяем, является ли строка палиндромом
+    return s == s[::-1]
+
+try:
+    input_string = input("Введите строку: ")
+    if is_palindrome(input_string):
+        print("Да, введенная строка является палиндромом.")
+    else:
+        print("Нет, введенная строка не является палиндромом.")
+except Exception as e:
+    print("Произошла ошибка при обработке введенной строки:", e)
