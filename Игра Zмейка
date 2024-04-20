@@ -1,0 +1,122 @@
+import turtle
+from random import *
+import time
+
+# head
+head = turtle.Turtle()
+head.shape('square')
+head.color('red')
+head.penup()
+
+# parametrs
+step = 20
+timeout = 0.1
+width = 800
+height = 600
+game_over = False
+snail = []
+score = 0
+time1 = 0
+
+# food
+food = turtle.Turtle()
+food.speed(0)
+food.penup()
+food.shape('circle')
+food.color("blue")
+
+# screen
+screen = turtle.Screen()
+screen.setup(width, height)
+screen.bgcolor('black')
+screen.title("zмейка")
+
+
+# klavishi
+def go_up():
+    head.setheading(90)
+
+
+def go_down():
+    head.setheading(-90)
+
+
+def go_left():
+    head.setheading(180)
+
+
+def go_right():
+    head.setheading(0)
+
+
+def move():
+    global game_over
+    for i in range(len(snail) - 1, 0, -1):
+        x = snail[i - 1].xcor()
+        y = snail[i - 1].ycor()
+        snail[i].goto(x, y)
+    head.fd(step)
+    if (head.xcor() <= -width // 2 or head.xcor() >= width // 2 or
+            head.ycor() <= -height // 2 or head.ycor() >= height // 2):
+        game_over = True
+    for i in range(1, len(snail)):
+        if head.distance(snail[i]) < 5:
+            game_over = True
+
+
+def move_food():
+    x = step * randint(-(width // (2 * step) - 1), width // (2 * step) - 1)
+    y = step * randint(-(height // (2 * step) - 1), height // (2 * step) - 1)
+    food.goto(x, y)
+
+
+def write(txt, font, col):
+    pen.clear()
+    pen.color(col)
+    pen.write(txt, font=font)
+
+
+screen.listen()
+screen.onkeypress(go_up, "Up")
+screen.onkeypress(go_down, "Down")
+screen.onkeypress(go_left, "Left")
+screen.onkeypress(go_right, "Right")
+
+# snake
+snail.append(head)
+# pen
+pen = turtle.Turtle()
+pen.penup()
+pen.hideturtle()
+pen.goto(-width // 2 + 50, height // 2 - 50)
+pen.write("Очки:" + str(score), font=('Arial', 20))
+
+# osnova
+while not game_over:
+    move()
+    head.speed(0)
+    if head.distance(food) < 2:
+        score += 1
+        write("SCORE:" + str(score), ('Arial', 20), 'white')
+        segment = turtle.Turtle()
+        if len(snail) % 2 == 0:
+            color = 'red'
+        else:
+            color = 'white'
+        segment.color(color)
+        segment.penup()
+        segment.shape('square')
+        segment.speed(0)
+        snail.append(segment)
+        move_food()
+        if head.position() == segment.position():
+            break
+
+    time.sleep(timeout)
+food.hideturtle()
+for i in range(len(snail)):
+    snail[i].hideturtle()
+pen.goto(-170, 0)
+write("Game over", ("Arial", 50), 'red')
+
+turtle.exitonclick()
