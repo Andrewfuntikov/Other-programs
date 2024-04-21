@@ -1,0 +1,6 @@
+import pytube
+
+link = 'https://youtu.be/WjEQJiu8ONo?si=91VTIwWsVpT1-rqK'
+link = pytube.YouTube(link)
+video = link.streams.get_highest_resolution()
+video.download()
