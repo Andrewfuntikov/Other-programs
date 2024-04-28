@@ -1,0 +1,24 @@
+class Hero():
+    def __init__(self, name, age, height):
+        self.name = name
+        self.age = age
+        self.height = height
+    def say_hello(self):
+        print("Привет", self.name)
+        print('Вам', self.age, 'лет')
+        print('Ваш рост: ', self.height)
+
+
+class Warrior(Hero):
+    def __init__(self, name, age, height, armor, testosterone):
+        super().__init__(name, age, height)
+        self.armor = armor
+        self.testosterone = testosterone
+
+    def silomer(self):
+        print('Ваша броня: ', self.armor)
+        print('Ваш тестостерон: ', self.testosterone)
+vova = Hero("Вова", 13, 170)
+vova.say_hello()
+sigma = Warrior('вовка', 13, 170, 70, 12)
+sigma.silomer()
