@@ -1,0 +1,37 @@
+class People():
+    def __init__(self, name, age, experience, salary):
+        self.name = name.lower()  
+        self.age = age
+        self.experience = experience
+        self.salary = salary
+        
+    def data(self): # функция для вывода данных сотрудника
+        print('Имя сотрудника: ', self.name)
+        print('Возраст сотрудника: ', self.age)
+        print('Стаж сотрудника: ', self.experience)
+        print('Зарплата сотрудника: ', self.salary)
+    
+    def add_workers(self): # функция для добавления в файл 
+        worker_info = f'{self.name}: {self.age}: {self.experience}: {self.salary}\n'
+        # проверяем добавлен ли работник в файл
+        with open('notes.txt', 'r', encoding='utf-8', errors='replace') as file: 
+            for line in file:
+                line = line.strip().lower()  # нижний регистр
+                if worker_info.strip().lower() == line:
+                    print('Такой работник уже записан!')
+                    return
+        # добавляем в файл если работника ещё нет
+        with open('notes.txt', 'a', encoding='utf-8') as file:
+            file.write(worker_info)
+            print('Работник добавлен в файл.')
+score = 1
+while score != 0:
+    n = str(input('Введите имя: '))
+    a = str(input('Введите возраст: '))
+    e = str(input('Введите рабочий стаж сотрудника: '))
+    s = str(input('Введите зарплату сотрудника: '))
+    score = int(input('Добавить ещё одного сотрудника?\n 1 - Добавить \n 0 - Хватит! \n'))
+    worker = People(n, a, e, s)
+    worker.add_workers()
+    worker.data()
+    
