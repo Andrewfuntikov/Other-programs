@@ -1,0 +1,141 @@
+import sqlite3
+# Подключаемся к БД
+db = sqlite3.connect('base_data.db')
+# создали курсор
+c = db.cursor()
+# создали таблицу, если ее еще нет
+db_db = (""" CREATE TABLE IF NOT EXISTS articles (
+    kids_id INTEGER PRIMARY KEY,
+    kids_first_name TEXT(300),
+    kids_second_name TEXT(300),
+    date_of_birthday TEXT(300),
+    parents_name TEXT(300),
+    parents_second_name TEXT(300),
+    adres TEXT(300),
+    number TEXT(300),
+    mail TEXT(300),
+    date TEXT(300),
+    attendance TEXT(300),
+    height TEXT(300),
+    weight TEXT(300),
+    assessments TEXT(300),
+    behavior TEXT(300),
+    employee_name TEXT(300),
+    employee_second_name TEXT(300),
+    title TEXT(300),
+    schedule TEXT(300)
+)""")
+# Выводим данные из базы данных(шаблон)
+column_descriptions = {
+    'kids_id': 'ID ребёнка',
+    'kids_first_name': 'Имя ребёнка: ',
+    'kids_second_name': 'Фамилия ребёнка: ',
+    'date_of_birthday': 'День рождение ребёнка/опекуна: ',
+    'address': 'Адрес: ',
+    'parent_first_name': 'Имя одного родителя: ',
+    'parent_second_name': 'Фамилия родителя: ',
+    'adres': 'Адрес: ',
+    'number': 'Номер телефона: ',
+    'mail': 'Электронная почта: ',
+    'date': 'Дата: ',
+    'attendance': 'Посещаемость(Да/нет): ',
+    'height': 'Рост: ',
+    'weight': 'Вес: ',
+    'assessments': 'Оценки: ',
+    'behavior': 'Поведение: ',
+    'employee_name': 'Имя сотрудника: ',
+    'employee_second_name': 'Фамилия сотрудника: ',
+    'title': 'Должность сотрудника: ',
+    'schedule': 'График работы: '
+}
+c.executescript(db_db)
+# запросили у пользователя данные о ребенке
+answer = True
+while answer == True:
+    answer2 = input('''Здраствуйте хотите зарегистрировать ребёнка в садик? (Да/Нет)\nЕсли хотите увидеть полную БД введитк "фулл"\nЕсли хотите очистить БД введите 'clear'\nЕсли хотите найти ребёнка введите "info"\n''')
+    if answer2.lower() == 'да':
+        # Спрашиваем данные о ребёнке
+        kids_first_name = str(input('Имя ребёнка: '))
+        kids_second_name = str(input('Фамилия ребёнка: '))
+        date_of_birthday = str(input('День рождение ребёнка: '))
+        parents_name = str(input('Имя одного родителя/опекуна: '))
+        parents_second_name = str(input('Фамилия родителя: '))
+        adres = str(input('Адрес: '))
+        number = str(input('Номер телефона(+7,+3): '))
+        # запросили у пользователя данные о сотруднике
+        mail = str(input('Почта сотрудника: '))
+        date = str(input('Дата: '))
+        attendance = str(input('Посещаемость: '))
+        height = str(input('Рост: '))
+        weight = str(input('Вес: '))
+        assessments = str(input('Оценки: '))
+        behavior = str(input('Поведение: '))
+        employee_name = str(input('Имя сотрудника: '))
+        employee_second_name = str(input('Фамилия сотрудника: '))
+        title = str(input('Должность сотрудника: '))
+        schedule = str(input('График работы: '))
+        # добавили данные в базу данных
+        c.execute("""INSERT INTO articles(
+                    kids_first_name,
+                    kids_second_name,
+                    date_of_birthday,
+                    parents_name,
+                    parents_second_name,
+                    adres,
+                    number,
+                    mail,
+                    date,
+                    attendance,
+                    height,
+                    weight,
+                    assessments,
+                    behavior,
+                    employee_name,
+                    employee_second_name,
+                    title,
+                    schedule) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", [kids_first_name, kids_second_name, date_of_birthday, parents_name, parents_second_name, adres, number, mail, date, attendance, height, weight, assessments, behavior, employee_name, employee_second_name, title, schedule])
+        # Сохраняем всё в БД
+        db.commit()
+        print('Ребёнок успешно добавлен! Чтобы просмотреть данные введите "info" чтобы найти ребёнка или "фулл" чтобы просмотреть всю БД')
+    elif answer2.lower() == 'фулл':
+        # выводим данные из БД
+        full_bd = c.execute("SELECT * FROM articles")
+        for row in full_bd.fetchall():
+            for idx, val in enumerate(row):
+                column_name = full_bd.description[idx][0]
+                description = column_descriptions.get(column_name, '')
+                print(f"{description}: {val}")
+    elif answer2.lower() == 'clear':
+        try:
+            # Очищаем БД
+            c.execute("DELETE FROM articles")
+            db.commit()
+            print('БД успешно очищена!')
+        except sqlite3.Error as e:
+            # Пишем если произашла ошибка
+            print(f'Ошибка при выполнении запроса: {e}')
+    elif answer2.lower() == 'info':
+        answer1 = input('Введите имя ребенка: ')
+        try:
+            # Ищем ребёнка в БД
+            row = c.execute("SELECT * FROM articles WHERE kids_first_name = ?", (answer1,)).fetchone()
+            if row is None:
+                print('Ребенок не найден')
+            else:
+                # Печатаем данные ребёнка если нашли
+                for idx, val in enumerate(row):
+                    column_name = c.description[idx][0]
+                    description = column_descriptions.get(column_name, '')
+                    print(f"{description}: {val}")
+                print()  # Пустая строка между записями
+        except sqlite3.Error as e:
+            # Обрабатываем ошибку
+            print(f'Ошибка при выполнении запроса: {e}')
+    else:
+        # Если пользователь больше не хочет добавлять
+        print('Очень жаль увидемся позже((')
+        answer = False
+        break
+# закрыли курсор и соединение с базой данных
+c.close()
+db.close()
